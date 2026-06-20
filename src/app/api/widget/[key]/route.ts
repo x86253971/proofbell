@@ -33,7 +33,7 @@ export async function GET(
   const supabase = createAdminClient();
   const { data: site, error: siteErr } = await supabase
     .from("sites")
-    .select("id, settings")
+    .select("id, owner, settings")
     .eq("public_key", key)
     .maybeSingle();
 
@@ -43,6 +43,14 @@ export async function GET(
   if (!site) {
     return NextResponse.json({ error: "Site not found" }, { status: 404, headers: CORS });
   }
+
+  // Branding can only be hidden by paying ($49 lifetime) owners.
+  const { data: owner } = await supabase
+    .from("profiles")
+    .select("lifetime")
+    .eq("id", site.owner)
+    .maybeSingle();
+  const isLifetime = owner?.lifetime === true;
 
   const s = (site.settings ?? {}) as Settings;
   const max = Math.min(Math.max(s.max_events ?? 20, 1), 50);
@@ -68,7 +76,7 @@ export async function GET(
         theme: s.theme ?? "light",
         display_seconds: s.display_seconds ?? 5,
         gap_seconds: s.gap_seconds ?? 8,
-        hide_branding: s.hide_branding ?? false,
+        hide_branding: isLifetime ? (s.hide_branding ?? false) : false,
       },
       events: events ?? [],
     },

@@ -2,9 +2,11 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createSite, signOut } from "./actions";
+import { startCheckout } from "./billing-actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -13,17 +15,26 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ upgraded?: string }>;
+}) {
+  const { upgraded } = await searchParams;
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: sites } = await supabase
-    .from("sites")
-    .select("id, name, domain, created_at")
-    .order("created_at", { ascending: false });
+  const [{ data: sites }, { data: profile }] = await Promise.all([
+    supabase
+      .from("sites")
+      .select("id, name, domain, created_at")
+      .order("created_at", { ascending: false }),
+    supabase.from("profiles").select("lifetime").eq("id", user.id).maybeSingle(),
+  ]);
+  const isLifetime = profile?.lifetime === true;
 
   return (
     <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-12">
@@ -32,12 +43,38 @@ export default async function DashboardPage() {
           <h1 className="text-2xl font-bold">Your sites</h1>
           <p className="text-sm text-muted-foreground">{user.email}</p>
         </div>
-        <form action={signOut}>
-          <Button variant="outline" size="sm" type="submit">
-            Sign out
-          </Button>
-        </form>
+        <div className="flex items-center gap-3">
+          {isLifetime && <Badge>Lifetime</Badge>}
+          <form action={signOut}>
+            <Button variant="outline" size="sm" type="submit">
+              Sign out
+            </Button>
+          </form>
+        </div>
       </div>
+
+      {upgraded && (
+        <p className="mb-6 rounded-lg bg-primary/10 p-3 text-sm text-primary">
+          Thanks! Your lifetime upgrade is being activated.
+        </p>
+      )}
+
+      {!isLifetime && (
+        <Card className="mb-8 border-primary/40">
+          <CardHeader>
+            <CardTitle>Go lifetime — $49 once</CardTitle>
+            <CardDescription>
+              Unlimited sites and events, remove the ProofBell badge. No
+              subscription, ever.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form action={startCheckout}>
+              <Button type="submit">Upgrade for $49</Button>
+            </form>
+          </CardContent>
+        </Card>
+      )}
 
       <Card className="mb-8">
         <CardHeader>

@@ -2,7 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { addManualEvent } from "../actions";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
@@ -18,10 +18,13 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
 export default async function SitePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ siteId: string }>;
+  searchParams: Promise<{ stripe?: string }>;
 }) {
   const { siteId } = await params;
+  const { stripe: stripeStatus } = await searchParams;
   const supabase = await createClient();
   const {
     data: { user },
@@ -47,6 +50,12 @@ export default async function SitePage({
   -H "Authorization: Bearer ${site.ingest_secret}" \
   -H "Content-Type: application/json" \
   -d '{"type":"subscribe","name":"Alex","location":"Tokyo, JP"}'`;
+
+  const connectUrl =
+    `https://connect.stripe.com/oauth/authorize?response_type=code` +
+    `&client_id=${process.env.STRIPE_CONNECT_CLIENT_ID ?? ""}` +
+    `&scope=read_only&state=${site.id}` +
+    `&redirect_uri=${encodeURIComponent(`${APP_URL}/api/stripe/connect/callback`)}`;
 
   return (
     <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-12">
@@ -76,10 +85,41 @@ export default async function SitePage({
 
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle>2. Send events</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle>2. Connect Stripe</CardTitle>
+            {site.stripe_connected && <Badge>Connected</Badge>}
+          </div>
           <CardDescription>
-            Connect Stripe (coming next) for automatic events, or POST your own.
-            Keep this ingest key secret.
+            Auto-show real subscribes and purchases from your own Stripe — the
+            ProofBell edge for SaaS. Read-only access.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {stripeStatus === "connected" && (
+            <p className="mb-3 text-sm text-primary">Stripe connected.</p>
+          )}
+          {stripeStatus === "error" && (
+            <p className="mb-3 text-sm text-destructive">
+              Could not connect Stripe — try again.
+            </p>
+          )}
+          {site.stripe_connected ? (
+            <p className="text-sm text-muted-foreground">
+              New subscriptions and one-time purchases will appear automatically.
+            </p>
+          ) : (
+            <a href={connectUrl} className={buttonVariants()}>
+              Connect Stripe
+            </a>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Or send events yourself</CardTitle>
+          <CardDescription>
+            POST from your backend. Keep this ingest key secret.
           </CardDescription>
         </CardHeader>
         <CardContent>
