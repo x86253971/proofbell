@@ -24,7 +24,10 @@ export default function Home() {
       <header className="mx-auto flex w-full max-w-5xl items-center justify-between px-6 py-5">
         <span className="text-lg font-bold">ProofBell</span>
         <div className="flex items-center gap-3">
-          <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground">
+          <Link
+            href="/login"
+            className="text-sm text-muted-foreground hover:text-foreground"
+          >
             Sign in
           </Link>
           <Link href="/login">
@@ -44,8 +47,8 @@ export default function Home() {
         </h1>
         <p className="mx-auto mt-5 max-w-xl text-lg text-muted-foreground">
           ProofBell turns your Stripe activity into live social-proof
-          notifications. One snippet, connect Stripe, done. Pay once — no monthly
-          fees.
+          notifications. One snippet, connect Stripe, done. Pay once — no
+          monthly fees.
         </p>
         <div className="mt-8 flex items-center justify-center gap-3">
           <Link href="/login">
@@ -80,7 +83,9 @@ export default function Home() {
       </section>
 
       <section id="pricing" className="mx-auto w-full max-w-4xl px-6 py-16">
-        <h2 className="text-center text-2xl font-bold">Simple, one-time pricing</h2>
+        <h2 className="text-center text-2xl font-bold">
+          Simple, one-time pricing
+        </h2>
         <div className="mx-auto mt-8 grid max-w-2xl gap-6 sm:grid-cols-2">
           <div className="rounded-xl border border-border p-6">
             <h3 className="font-semibold">Free</h3>
@@ -99,7 +104,10 @@ export default function Home() {
           <div className="rounded-xl border-2 border-primary p-6">
             <h3 className="font-semibold">Lifetime</h3>
             <p className="mt-1 text-3xl font-bold">
-              $49 <span className="text-base font-normal text-muted-foreground">once</span>
+              $49{" "}
+              <span className="text-base font-normal text-muted-foreground">
+                once
+              </span>
             </p>
             <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
               <li>Unlimited sites</li>

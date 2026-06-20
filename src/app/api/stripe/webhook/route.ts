@@ -33,14 +33,12 @@ export async function POST(req: Request) {
       .maybeSingle();
     if (!site) return NextResponse.json({ received: true });
 
-    let row:
-      | {
-          type: "subscribe" | "purchase";
-          title: string;
-          amount_cents: number | null;
-          currency: string | null;
-        }
-      | null = null;
+    let row: {
+      type: "subscribe" | "purchase";
+      title: string;
+      amount_cents: number | null;
+      currency: string | null;
+    } | null = null;
 
     if (event.type === "customer.subscription.created") {
       const sub = event.data.object as Stripe.Subscription;

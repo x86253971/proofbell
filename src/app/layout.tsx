@@ -14,7 +14,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "ProofBell",
-  description: "Social proof and live-activity widget for indie SaaS founders. Connect Stripe to show recent signups, subscribes, and live user counts. Pay once, embed forever.",
+  description:
+    "Social proof and live-activity widget for indie SaaS founders. Connect Stripe to show recent signups, subscribes, and live user counts. Pay once, embed forever.",
 };
 
 export default function RootLayout({
