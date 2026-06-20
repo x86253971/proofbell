@@ -27,7 +27,7 @@
         currency: (currency || "usd").toUpperCase(),
         maximumFractionDigits: 0,
       }).format(cents / 100);
-    } catch (e) {
+    } catch {
       return "$" + Math.round(cents / 100);
     }
   }
