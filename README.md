@@ -1,6 +1,6 @@
-# UpdateBell
+# ProofBell
 
-Changelog and what's-new notification widget for indie founders. Pay once, embed forever.
+Social proof and live-activity widget for indie SaaS founders. Connect Stripe to show recent signups, subscribes, and live user counts. Pay once, embed forever.
 
 Scaffolded from `portfolio-os/templates/micro-saas`. Rules live in `CLAUDE.md`.
 

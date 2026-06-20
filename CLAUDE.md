@@ -1,9 +1,9 @@
-# UpdateBell — AI Development Rules
+# ProofBell — AI Development Rules
 
 ## Project
 
-- **Product**: UpdateBell
-- **Niche**: Changelog and what's-new notification widget for indie founders. Pay once, embed forever.
+- **Product**: ProofBell
+- **Niche**: Social proof and live-activity widget for indie SaaS founders. Connect Stripe to show recent signups, subscribes, and live user counts. Pay once, embed forever.
 - **Status**: building
 
 ## Mandatory Tech Stack
