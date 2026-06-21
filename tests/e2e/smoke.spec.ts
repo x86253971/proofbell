@@ -40,3 +40,10 @@ test("widget API returns config + events for the demo key", async ({
   expect(body).toHaveProperty("config");
   expect(Array.isArray(body.events)).toBe(true);
 });
+
+test("public /demo page loads and the widget renders", async ({ page }) => {
+  await page.goto("/demo");
+  await expect(page.locator("body")).toContainText("Acme Analytics");
+  // embed.js (via next/script) must find its tag and inject the .pbell widget.
+  await expect(page.locator(".pbell")).toHaveCount(1, { timeout: 15000 });
+});

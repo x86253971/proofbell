@@ -83,3 +83,63 @@ export async function signOut(): Promise<void> {
   await supabase.auth.signOut();
   redirect("/login");
 }
+
+const SettingsInput = z.object({
+  site_id: z.string().uuid(),
+  position: z.enum(["bottom-left", "bottom-right", "top-left", "top-right"]),
+  theme: z.enum(["light", "dark"]),
+  display_seconds: z.coerce.number().int().min(2).max(30),
+  gap_seconds: z.coerce.number().int().min(2).max(120),
+});
+
+export async function updateSettings(formData: FormData): Promise<void> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  const parsed = SettingsInput.safeParse({
+    site_id: formData.get("site_id"),
+    position: formData.get("position"),
+    theme: formData.get("theme"),
+    display_seconds: formData.get("display_seconds"),
+    gap_seconds: formData.get("gap_seconds"),
+  });
+  if (!parsed.success) return;
+  const s = parsed.data;
+
+  // Hiding the badge is a paid ($49 lifetime) feature — ignore the toggle otherwise.
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("lifetime")
+    .eq("id", user.id)
+    .maybeSingle();
+  const hideBranding =
+    profile?.lifetime === true && formData.get("hide_branding") === "on";
+
+  // Merge into existing settings. RLS limits this update to the owner's site.
+  const { data: site } = await supabase
+    .from("sites")
+    .select("settings")
+    .eq("id", s.site_id)
+    .maybeSingle();
+  if (!site) return;
+
+  const current = (site.settings ?? {}) as Record<string, unknown>;
+  await supabase
+    .from("sites")
+    .update({
+      settings: {
+        ...current,
+        position: s.position,
+        theme: s.theme,
+        display_seconds: s.display_seconds,
+        gap_seconds: s.gap_seconds,
+        hide_branding: hideBranding,
+      },
+    })
+    .eq("id", s.site_id);
+
+  revalidatePath(`/dashboard/${s.site_id}`);
+}

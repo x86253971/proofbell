@@ -1,7 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { addManualEvent } from "../actions";
+import { addManualEvent, updateSettings } from "../actions";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -33,10 +33,27 @@ export default async function SitePage({
 
   const { data: site } = await supabase
     .from("sites")
-    .select("id, name, domain, public_key, ingest_secret, stripe_connected")
+    .select(
+      "id, name, domain, public_key, ingest_secret, stripe_connected, settings",
+    )
     .eq("id", siteId)
     .maybeSingle();
   if (!site) notFound();
+
+  const settings = (site.settings ?? {}) as {
+    position?: string;
+    theme?: string;
+    display_seconds?: number;
+    gap_seconds?: number;
+    hide_branding?: boolean;
+  };
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("lifetime")
+    .eq("id", user.id)
+    .maybeSingle();
+  const isLifetime = profile?.lifetime === true;
 
   const { data: events } = await supabase
     .from("events")
@@ -166,6 +183,97 @@ export default async function SitePage({
               <Input id="location" name="location" placeholder="Tokyo, JP" />
             </div>
             <Button type="submit">Add</Button>
+          </form>
+        </CardContent>
+      </Card>
+
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Widget settings</CardTitle>
+          <CardDescription>
+            Position, theme, and timing. Changes apply within ~30s (widget
+            cache).
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form action={updateSettings} className="flex flex-col gap-4">
+            <input type="hidden" name="site_id" value={site.id} />
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="position">Position</Label>
+                <select
+                  id="position"
+                  name="position"
+                  className="h-9 rounded-md border border-input bg-transparent px-3 text-sm"
+                  defaultValue={settings.position ?? "bottom-left"}
+                >
+                  <option value="bottom-left">Bottom left</option>
+                  <option value="bottom-right">Bottom right</option>
+                  <option value="top-left">Top left</option>
+                  <option value="top-right">Top right</option>
+                </select>
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="theme">Theme</Label>
+                <select
+                  id="theme"
+                  name="theme"
+                  className="h-9 rounded-md border border-input bg-transparent px-3 text-sm"
+                  defaultValue={settings.theme ?? "light"}
+                >
+                  <option value="light">Light</option>
+                  <option value="dark">Dark</option>
+                </select>
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="display_seconds">Show for (seconds)</Label>
+                <Input
+                  id="display_seconds"
+                  name="display_seconds"
+                  type="number"
+                  min={2}
+                  max={30}
+                  defaultValue={settings.display_seconds ?? 5}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="gap_seconds">Gap between (seconds)</Label>
+                <Input
+                  id="gap_seconds"
+                  name="gap_seconds"
+                  type="number"
+                  min={2}
+                  max={120}
+                  defaultValue={settings.gap_seconds ?? 8}
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                id="hide_branding"
+                name="hide_branding"
+                type="checkbox"
+                defaultChecked={settings.hide_branding ?? false}
+                disabled={!isLifetime}
+                className="h-4 w-4"
+              />
+              <Label htmlFor="hide_branding" className="font-normal">
+                Hide the “Powered by ProofBell” badge
+                {!isLifetime && (
+                  <Link
+                    href="/dashboard"
+                    className="ml-2 text-primary underline"
+                  >
+                    Upgrade ($49)
+                  </Link>
+                )}
+              </Label>
+            </div>
+
+            <div>
+              <Button type="submit">Save settings</Button>
+            </div>
           </form>
         </CardContent>
       </Card>

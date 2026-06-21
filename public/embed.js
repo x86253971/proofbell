@@ -2,7 +2,10 @@
    Usage: <script src="https://proofbell.com/embed.js" data-key="pk_xxx" async></script> */
 (function () {
   "use strict";
-  var script = document.currentScript;
+  var script =
+    document.currentScript ||
+    document.querySelector("script[data-key][src*='embed.js']") ||
+    document.querySelector("script[data-key]");
   if (!script) return;
   var key = script.getAttribute("data-key");
   if (!key) return;
