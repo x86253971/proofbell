@@ -98,7 +98,7 @@
     function render(ev) {
       var brand = cfg.hide_branding
         ? ""
-        : '<div class="pbell-brand"><a href="https://proofbell.com" target="_blank" rel="noopener">by ProofBell</a></div>';
+        : '<div class="pbell-brand"><a href="https://proofbell.vercel.app" target="_blank" rel="noopener">by ProofBell</a></div>';
       box.innerHTML =
         '<div class="pbell-card"><div class="pbell-dot">B</div><div>' +
         '<div class="pbell-msg"></div>' +
