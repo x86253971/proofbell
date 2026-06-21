@@ -54,13 +54,21 @@
     var horz = pos.indexOf("right") !== -1 ? "right:20px;" : "left:20px;";
     var dark = cfg.theme === "dark";
     var css =
-      ".pbell{position:fixed;z-index:2147483600;" + vert + horz +
+      ".pbell{position:fixed;z-index:2147483600;" +
+      vert +
+      horz +
       "max-width:330px;font:14px/1.4 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;" +
       "transform:translateY(12px);opacity:0;transition:transform .35s ease,opacity .35s ease;pointer-events:none}" +
       ".pbell.show{transform:translateY(0);opacity:1}" +
       ".pbell-card{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;" +
-      "background:" + (dark ? "#1f2937" : "#fff") + ";color:" + (dark ? "#f3f4f6" : "#111827") + ";" +
-      "box-shadow:0 8px 30px rgba(0,0,0,.18);border:1px solid " + (dark ? "#374151" : "#eef0f3") + "}" +
+      "background:" +
+      (dark ? "#1f2937" : "#fff") +
+      ";color:" +
+      (dark ? "#f3f4f6" : "#111827") +
+      ";" +
+      "box-shadow:0 8px 30px rgba(0,0,0,.18);border:1px solid " +
+      (dark ? "#374151" : "#eef0f3") +
+      "}" +
       ".pbell-dot{flex:none;width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;" +
       "background:linear-gradient(135deg,#6366f1,#ec4899);color:#fff;font-size:16px}" +
       ".pbell-msg{font-weight:600}.pbell-meta{font-size:12px;opacity:.6;margin-top:2px}" +
@@ -91,14 +99,18 @@
       box.innerHTML =
         '<div class="pbell-card"><div class="pbell-dot">B</div><div>' +
         '<div class="pbell-msg"></div>' +
-        '<div class="pbell-meta"></div>' + brand + "</div></div>";
+        '<div class="pbell-meta"></div>' +
+        brand +
+        "</div></div>";
       box.querySelector(".pbell-msg").textContent = line(ev);
       box.querySelector(".pbell-meta").textContent = timeAgo(ev.created_at);
     }
 
     function cycle() {
       render(events[i % events.length]);
-      requestAnimationFrame(function () { box.classList.add("show"); });
+      requestAnimationFrame(function () {
+        box.classList.add("show");
+      });
       setTimeout(function () {
         box.classList.remove("show");
         i++;
@@ -109,7 +121,11 @@
   }
 
   fetch(base + "/api/widget/" + encodeURIComponent(key))
-    .then(function (r) { return r.ok ? r.json() : null; })
-    .then(function (data) { if (data) run(data.config || {}, data.events || []); })
+    .then(function (r) {
+      return r.ok ? r.json() : null;
+    })
+    .then(function (data) {
+      if (data) run(data.config || {}, data.events || []);
+    })
     .catch(function () {});
 })();

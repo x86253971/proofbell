@@ -43,5 +43,7 @@ export async function GET(request: Request) {
     return NextResponse.redirect(`${APP_URL}/dashboard/${siteId}?stripe=error`);
   }
 
-  return NextResponse.redirect(`${APP_URL}/dashboard/${siteId}?stripe=connected`);
+  return NextResponse.redirect(
+    `${APP_URL}/dashboard/${siteId}?stripe=connected`,
+  );
 }

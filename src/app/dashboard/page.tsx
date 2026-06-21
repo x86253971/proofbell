@@ -32,7 +32,11 @@ export default async function DashboardPage({
       .from("sites")
       .select("id, name, domain, created_at")
       .order("created_at", { ascending: false }),
-    supabase.from("profiles").select("lifetime").eq("id", user.id).maybeSingle(),
+    supabase
+      .from("profiles")
+      .select("lifetime")
+      .eq("id", user.id)
+      .maybeSingle(),
   ]);
   const isLifetime = profile?.lifetime === true;
 
@@ -84,7 +88,10 @@ export default async function DashboardPage({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form action={createSite} className="flex flex-col gap-4 sm:flex-row sm:items-end">
+          <form
+            action={createSite}
+            className="flex flex-col gap-4 sm:flex-row sm:items-end"
+          >
             <div className="flex flex-1 flex-col gap-2">
               <Label htmlFor="name">Name</Label>
               <Input id="name" name="name" placeholder="Acme SaaS" required />

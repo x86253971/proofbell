@@ -18,7 +18,10 @@ export async function POST(req: Request) {
     ? auth.slice(7).trim()
     : "";
   if (!secret.startsWith("sk_")) {
-    return NextResponse.json({ error: "Missing ingest secret" }, { status: 401 });
+    return NextResponse.json(
+      { error: "Missing ingest secret" },
+      { status: 401 },
+    );
   }
 
   let json: unknown;
@@ -29,7 +32,10 @@ export async function POST(req: Request) {
   }
   const parsed = Body.safeParse(json);
   if (!parsed.success) {
-    return NextResponse.json({ error: "Invalid event payload" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Invalid event payload" },
+      { status: 400 },
+    );
   }
 
   const supabase = createAdminClient();
@@ -39,7 +45,10 @@ export async function POST(req: Request) {
     .eq("ingest_secret", secret)
     .maybeSingle();
   if (!site) {
-    return NextResponse.json({ error: "Invalid ingest secret" }, { status: 401 });
+    return NextResponse.json(
+      { error: "Invalid ingest secret" },
+      { status: 401 },
+    );
   }
 
   const e = parsed.data;
@@ -68,7 +77,10 @@ export async function POST(req: Request) {
     if (error.code === "23505") {
       return NextResponse.json({ ok: true, deduped: true });
     }
-    return NextResponse.json({ error: "Could not record event" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Could not record event" },
+      { status: 500 },
+    );
   }
   return NextResponse.json({ ok: true });
 }

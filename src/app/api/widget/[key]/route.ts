@@ -27,7 +27,10 @@ export async function GET(
 ) {
   const { key } = await params;
   if (!key.startsWith("pk_")) {
-    return NextResponse.json({ error: "Invalid key" }, { status: 400, headers: CORS });
+    return NextResponse.json(
+      { error: "Invalid key" },
+      { status: 400, headers: CORS },
+    );
   }
 
   const supabase = createAdminClient();
@@ -38,10 +41,16 @@ export async function GET(
     .maybeSingle();
 
   if (siteErr) {
-    return NextResponse.json({ error: "Lookup failed" }, { status: 500, headers: CORS });
+    return NextResponse.json(
+      { error: "Lookup failed" },
+      { status: 500, headers: CORS },
+    );
   }
   if (!site) {
-    return NextResponse.json({ error: "Site not found" }, { status: 404, headers: CORS });
+    return NextResponse.json(
+      { error: "Site not found" },
+      { status: 404, headers: CORS },
+    );
   }
 
   // Branding can only be hidden by paying ($49 lifetime) owners.
@@ -66,7 +75,10 @@ export async function GET(
     .limit(max);
 
   if (evErr) {
-    return NextResponse.json({ error: "Events failed" }, { status: 500, headers: CORS });
+    return NextResponse.json(
+      { error: "Events failed" },
+      { status: 500, headers: CORS },
+    );
   }
 
   return NextResponse.json(

@@ -105,7 +105,8 @@ export default async function SitePage({
           )}
           {site.stripe_connected ? (
             <p className="text-sm text-muted-foreground">
-              New subscriptions and one-time purchases will appear automatically.
+              New subscriptions and one-time purchases will appear
+              automatically.
             </p>
           ) : (
             <a href={connectUrl} className={buttonVariants()}>
