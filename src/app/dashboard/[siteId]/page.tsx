@@ -71,7 +71,7 @@ export default async function SitePage({
   const connectUrl =
     `https://connect.stripe.com/oauth/authorize?response_type=code` +
     `&client_id=${process.env.STRIPE_CONNECT_CLIENT_ID ?? ""}` +
-    `&scope=read_only&state=${site.id}` +
+    `&scope=read_write&state=${site.id}` +
     `&redirect_uri=${encodeURIComponent(`${APP_URL}/api/stripe/connect/callback`)}`;
 
   return (
